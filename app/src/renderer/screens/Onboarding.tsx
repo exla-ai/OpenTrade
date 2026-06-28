@@ -46,7 +46,7 @@ export function Onboarding() {
         <Stepper current={step} />
 
         {step === "showcase" ? (
-          <FeatureShowcase onNext={next} className="mt-6" />
+          <FeatureShowcase onNext={next} className="mt-10" />
         ) : (
           <Card className="mt-6 rounded-lg p-5">
             {step === "claude" && <ClaudeStep onNext={next} />}

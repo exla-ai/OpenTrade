@@ -2,7 +2,7 @@ import { StatusDot } from "@renderer/components/layout/StatusDot";
 import { Button } from "@renderer/components/ui/button";
 import { cn } from "@renderer/lib/utils";
 import type { AgentStatus } from "@shared/agent";
-import { ArrowRight, Clock, Radio } from "lucide-react";
+import { Clock, Radio } from "lucide-react";
 import type { ComponentType, ReactNode } from "react";
 
 /**
@@ -36,9 +36,9 @@ export function FeatureShowcase({ onNext, className }: { onNext: () => void; cla
         />
       </div>
 
-      <div className="mt-6 flex justify-end">
+      <div className="mt-8 flex justify-center">
         <Button type="button" onClick={onNext}>
-          Continue <ArrowRight className="size-4" />
+          Continue
         </Button>
       </div>
     </div>
