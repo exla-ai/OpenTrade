@@ -1,0 +1,31 @@
+OpenTrade
+Copyright (c) 2026 OpenTrade contributors
+
+This software is licensed under the Elastic License 2.0. See the LICENSE file
+for the full terms.
+
+--------------------------------------------------------------------------------
+Third-party components
+--------------------------------------------------------------------------------
+
+OpenTrade includes or derives from the following open-source projects, each
+distributed under its own license:
+
+- shadcn/ui (https://ui.shadcn.com) — MIT License.
+  The UI primitives in `app/src/renderer/components/ui/` are derived from
+  shadcn/ui and tuned to OpenTrade's design.
+
+- Radix UI (https://www.radix-ui.com) — MIT License.
+  Underlying accessible component primitives.
+
+Other dependencies are declared in `package.json` / `app/package.json` and are
+governed by their respective licenses as published on npm.
+
+--------------------------------------------------------------------------------
+Trademarks
+--------------------------------------------------------------------------------
+
+"Robinhood" is a trademark of Robinhood Markets, Inc. "Claude" and "Claude Code"
+are trademarks of Anthropic. OpenTrade is an independent, community project and
+is not affiliated with, endorsed by, or sponsored by Robinhood Markets, Inc. or
+Anthropic. All trademarks are the property of their respective owners.

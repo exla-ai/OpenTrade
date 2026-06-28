@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": false,
+    "types": ["react", "react-dom", "node"],
+    "paths": {
+      "@renderer/*": ["./src/renderer/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@main/*": ["./src/main/*"]
+    }
+  },
+  "include": ["src/renderer", "src/shared", "src/preload"],
+  "exclude": ["src/**/*.test.ts"]
+}

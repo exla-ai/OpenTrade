@@ -1,0 +1,60 @@
+appId: ai.exla.opentrade
+productName: OpenTrade
+directories:
+  output: release
+  buildResources: build
+files:
+  - out/**/*
+  - package.json
+# Native modules and the per-agent MCP server must live on the real filesystem,
+# not inside the asar archive:
+#  - agent-mcp.js is spawned by `claude` (a child process), not by Electron.
+#  - better-sqlite3 / node-pty ship `.node` binaries that dlopen at runtime; the
+#    externalized host bundle `require`s them and node-pty re-spawns out of asar.
+# (The bun symlinks for these are materialized into real dirs by
+#  scripts/copy-native-modules.mjs in the `prepackage` step — electron-builder
+#  cannot follow symlinks into the asar.)
+asarUnpack:
+  - out/main/agent-mcp.js
+  - "**/node_modules/better-sqlite3/**"
+  - "**/node_modules/node-pty/**"
+# Agent scaffolding reads these at runtime from Contents/Resources/ (see
+# resolveTemplatesDir / resolveHooksDir in services/agents/registry.ts). They live
+# at the repo root (outside app/), so copy them into the bundle's Resources dir —
+# without this, creating an agent fails and template CLAUDE.md comes up blank.
+extraResources:
+  - from: ../templates
+    to: templates
+  - from: ../resources
+    to: resources
+mac:
+  category: public.app-category.finance
+  target:
+    - target: dmg
+      arch: [arm64]
+    # electron-updater on macOS updates from the .zip (+ its blockmap); the DMG is
+    # only the first-run installer.
+    - target: zip
+      arch: [arm64]
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.inherit.plist
+  # Notarization runs automatically when APPLE_ID / APPLE_APP_SPECIFIC_PASSWORD /
+  # APPLE_TEAM_ID are in the environment; the Developer ID cert comes from
+  # CSC_LINK / CSC_KEY_PASSWORD. See docs/PACKAGING.md.
+  notarize: true
+dmg:
+  title: OpenTrade ${version}
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
+publish:
+  provider: github
+  owner: exla-ai
+  repo: OpenTrade
+npmRebuild: true

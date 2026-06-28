@@ -1,0 +1,28 @@
+node_modules/
+dist/
+out/
+release/
+*.log
+.DS_Store
+.env
+.env.local
+app/src/renderer/styles/_generated*
+*.tsbuildinfo
+.turbo/
+
+# Spikes / throwaway experiments (local only, not part of the public release)
+app/spike/
+
+# Claude Code local runtime state (worktrees, locks, skills) — not part of the release
+.claude/
+
+# Per-worktree dev home (dev.sh): isolated DB, host manifest, lock, logs
+.opentrade-dev/
+
+# Local-only working docs (not part of the public release)
+docs/ARCHITECTURE.md
+docs/TODO.md
+docs/PACKAGING.md
+
+# Local agent guidance (not part of the public release)
+CLAUDE.md

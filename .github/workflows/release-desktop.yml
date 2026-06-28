@@ -1,0 +1,64 @@
+name: Release desktop (macOS)
+
+# Builds and publishes the macOS DMG + update artifacts to a GitHub Release.
+# - Tag push (`v*.*.*`) → full Developer ID signed + notarized release.
+# - Manual run (workflow_dispatch) → optionally `adhoc` mode, which ad-hoc signs
+#   and SKIPS notarization (useful when Apple's notary service is backed up).
+#
+# Required repository secrets for a signed build (see docs/PACKAGING.md):
+#   CSC_LINK                     base64 of the Developer ID Application .p12
+#   CSC_KEY_PASSWORD             password for that .p12
+#   APPLE_ID                     Apple ID email used for notarization
+#   APPLE_APP_SPECIFIC_PASSWORD  app-specific password for that Apple ID
+#   APPLE_TEAM_ID                10-char Apple Developer Team ID
+# GITHUB_TOKEN (provided automatically) is used by electron-builder to upload.
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      adhoc:
+        description: "Ad-hoc sign (skip Developer ID signing + notarization)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write # create/edit the GitHub Release
+
+jobs:
+  build:
+    runs-on: macos-14 # Apple Silicon runner (arm64)
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Rebuild native modules for the Electron ABI
+        run: bun run --cwd app rebuild
+
+      - name: Build, sign & publish
+        env:
+          ADHOC: ${{ inputs.adhoc }}
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # `package` runs the prepackage native-module materialization + electron-vite
+        # build + electron-builder. `--publish always` uploads the DMG, the zip, and
+        # latest-mac.yml (the electron-updater feed) to the GitHub Release.
+        run: |
+          if [ "$ADHOC" = "true" ]; then
+            echo "::warning::Ad-hoc build — skipping Developer ID signing + notarization."
+            export CSC_IDENTITY_AUTO_DISCOVERY=false
+            unset CSC_LINK CSC_KEY_PASSWORD APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID
+          fi
+          bun run --cwd app package -- --publish always
