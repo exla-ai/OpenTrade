@@ -56,7 +56,10 @@ jobs:
         # build + electron-builder. `--publish always` uploads the DMG, the zip, and
         # latest-mac.yml (the electron-updater feed) to the GitHub Release.
         run: |
-          if [ "$ADHOC" = "true" ]; then
+          # Ad-hoc when explicitly requested OR when no signing cert is configured
+          # (so a tag push still produces a usable release before signing secrets
+          # are set / while Apple's notary is unavailable).
+          if [ "$ADHOC" = "true" ] || [ -z "$CSC_LINK" ]; then
             echo "::warning::Ad-hoc build — skipping Developer ID signing + notarization."
             export CSC_IDENTITY_AUTO_DISCOVERY=false
             unset CSC_LINK CSC_KEY_PASSWORD APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID
