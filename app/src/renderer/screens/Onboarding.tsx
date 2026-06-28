@@ -1,5 +1,6 @@
 import { AlertTriangle, ArrowRight, Check, Loader2, Terminal } from "lucide-react";
 import { useState } from "react";
+import { FeatureShowcase } from "../components/onboarding/FeatureShowcase";
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
 import { Input } from "../components/ui/input";
@@ -9,17 +10,18 @@ import { trpc } from "../lib/trpc";
 import { cn } from "../lib/utils";
 import { useUIStore } from "../stores/ui";
 
-type Step = "claude" | "broker" | "agent";
-const STEPS: Step[] = ["claude", "broker", "agent"];
+type Step = "claude" | "broker" | "showcase" | "agent";
+const STEPS: Step[] = ["claude", "broker", "showcase", "agent"];
 const STEP_LABELS: Record<Step, string> = {
   claude: "Claude Code",
   broker: "Robinhood",
+  showcase: "Features",
   agent: "First agent",
 };
 
 /**
- * First-run wizard. Three lightweight steps — confirm the Claude Code CLI is
- * installed, connect Robinhood (optional; the panel degrades without it), and
+ * First-run wizard. Confirm the Claude Code CLI is installed, connect Robinhood
+ * (optional; the panel degrades without it), show a quick feature showcase, then
  * create the first agent. Finishing (or skipping the last step) persists
  * `onboardingComplete`, which is what App.tsx gates on.
  */
@@ -36,18 +38,22 @@ export function Onboarding() {
 
   return (
     <div className="flex h-full w-full items-center justify-center bg-background p-8">
-      <div className="w-[30rem]">
+      <div className={cn("w-[30rem]", step === "showcase" && "w-full max-w-5xl")}>
         <div className="mb-6 text-center">
           <h1 className="text-lg font-semibold text-foreground">OpenTrade</h1>
         </div>
 
         <Stepper current={step} />
 
-        <Card className="mt-6 rounded-lg p-5">
-          {step === "claude" && <ClaudeStep onNext={next} />}
-          {step === "broker" && <BrokerStep onNext={next} />}
-          {step === "agent" && <AgentStep onDone={finish} pending={finishSettings.isPending} />}
-        </Card>
+        {step === "showcase" ? (
+          <FeatureShowcase onNext={next} className="mt-6" />
+        ) : (
+          <Card className="mt-6 rounded-lg p-5">
+            {step === "claude" && <ClaudeStep onNext={next} />}
+            {step === "broker" && <BrokerStep onNext={next} />}
+            {step === "agent" && <AgentStep onDone={finish} pending={finishSettings.isPending} />}
+          </Card>
+        )}
 
         <button
           type="button"
