@@ -13,11 +13,6 @@ Download the latest `OpenTrade-<version>-arm64.dmg` from
 Applications. Requires an Apple Silicon Mac and the [`claude`](https://docs.claude.com/en/docs/claude-code)
 CLI. The app auto-updates from GitHub Releases.
 
-> **Note:** notarization is still pending, so on first launch macOS may block OpenTrade
-> ("Apple could not verify…"). To approve it, open **System Settings → Privacy & Security**,
-> scroll to the **Security** section, and click **Open Anyway** next to OpenTrade (or
-> right-click the app in Applications and choose **Open**).
-
 ## Build from source
 
 ```bash
